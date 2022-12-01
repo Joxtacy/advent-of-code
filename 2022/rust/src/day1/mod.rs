@@ -23,3 +23,23 @@ pub fn run() {
     let last_three = elves.iter().rev().take(3).sum::<i32>();
     println!("Total of top three: {:?}", last_three);
 }
+
+pub fn run2() {
+    let input = fs::read_to_string("./src/day1/input").unwrap();
+
+    let mut calories = input
+        .split("\n\n")
+        .map(|elf| {
+            elf.lines()
+                .map(|item| item.parse::<i32>().unwrap())
+                .sum::<i32>()
+        })
+        .collect::<Vec<i32>>();
+
+    calories.sort_by(|a, b| b.cmp(a));
+    println!(
+        "{:?} : {:?}",
+        calories.first().unwrap(),
+        calories.iter().take(3).sum::<i32>()
+    );
+}

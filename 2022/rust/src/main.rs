@@ -5,6 +5,7 @@ fn main() {
 
     match arg.as_str() {
         "day1" => day1::run(),
+        "day1-2" => day1::run2(),
         _ => eprintln!("Try again (:"),
     }
 }

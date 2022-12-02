@@ -2,10 +2,8 @@ use std::fs;
 
 const A: &str = "A";
 const B: &str = "B";
-const C: &str = "C";
 const X: &str = "X";
 const Y: &str = "Y";
-const Z: &str = "Z";
 
 pub fn run(path: &str) -> (i32, i32) {
     let lines = fs::read_to_string(path).unwrap();

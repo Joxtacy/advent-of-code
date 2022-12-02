@@ -1,7 +1,8 @@
 use std::{fs, io::BufRead};
 
-pub fn run() {
-    let input = fs::read("./src/day1/input").expect("Should have a file called `input`");
+/// BUG: The last elf does not get added to the array.
+pub fn run(path: &str) -> (i32, i32) {
+    let input = fs::read(path).expect("Should have a file called `input`");
     let lines = input.lines();
 
     let mut elves = vec![];
@@ -18,14 +19,17 @@ pub fn run() {
     }
 
     elves.sort();
-    println!("Most calories: {:?}", elves.last().unwrap());
+    let last = elves.last().unwrap();
+    println!("Most calories: {:?}", last);
 
     let last_three = elves.iter().rev().take(3).sum::<i32>();
     println!("Total of top three: {:?}", last_three);
+
+    (last.to_owned(), last_three)
 }
 
-pub fn run2() {
-    let input = fs::read_to_string("./src/day1/input").unwrap();
+pub fn run2(path: &str) -> (i32, i32) {
+    let input = fs::read_to_string(path).unwrap();
 
     let mut calories = input
         .split("\n\n")
@@ -37,9 +41,51 @@ pub fn run2() {
         .collect::<Vec<i32>>();
 
     calories.sort_by(|a, b| b.cmp(a));
-    println!(
-        "{:?} : {:?}",
-        calories.first().unwrap(),
-        calories.iter().take(3).sum::<i32>()
-    );
+
+    let last = calories.first().unwrap();
+    let last_three = calories.iter().take(3).sum::<i32>();
+    println!("{:?} : {:?}", last, last_three);
+
+    (last.to_owned(), last_three)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{run, run2};
+
+    #[test]
+    fn part_1_1() {
+        let path = "./src/day1/test";
+
+        let result = run(path);
+
+        assert_eq!(result.0, 24000);
+    }
+
+    #[test]
+    fn part_2_1() {
+        let path = "./src/day1/test";
+
+        let result = run(path);
+
+        assert_eq!(result.1, 45000);
+    }
+
+    #[test]
+    fn part_1_2() {
+        let path = "./src/day1/test";
+
+        let result = run2(path);
+
+        assert_eq!(result.0, 24000);
+    }
+
+    #[test]
+    fn part_2_2() {
+        let path = "./src/day1/test";
+
+        let result = run2(path);
+
+        assert_eq!(result.1, 45000);
+    }
 }

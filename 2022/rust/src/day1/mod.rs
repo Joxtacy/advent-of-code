@@ -20,10 +20,8 @@ pub fn run(path: &str) -> (i32, i32) {
 
     elves.sort();
     let last = elves.last().unwrap();
-    println!("Most calories: {:?}", last);
 
     let last_three = elves.iter().rev().take(3).sum::<i32>();
-    println!("Total of top three: {:?}", last_three);
 
     (last.to_owned(), last_three)
 }
@@ -44,7 +42,6 @@ pub fn run2(path: &str) -> (i32, i32) {
 
     let last = calories.first().unwrap();
     let last_three = calories.iter().take(3).sum::<i32>();
-    println!("{:?} : {:?}", last, last_three);
 
     (last.to_owned(), last_three)
 }

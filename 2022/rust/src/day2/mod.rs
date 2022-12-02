@@ -100,7 +100,6 @@ pub fn run(path: &str) -> (i32, i32) {
         sum2 += score;
     }
 
-    println!("{} : {}", sum1, sum2);
     (sum1, sum2)
 }
 

@@ -9,7 +9,6 @@ fn main() {
         "day1-2" => day1::run2("./src/day1/input"),
 
         "day2" => day2::run("./src/day2/input"),
-        "day2-2" => day2::run2("./src/day2/input"),
 
         _ => panic!("Try again (:"),
     };

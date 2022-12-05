@@ -1,7 +1,7 @@
 use std::{fs, io::BufRead};
 
 /// BUG: The last elf does not get added to the array.
-pub fn run(path: &str) -> (i32, i32) {
+pub fn run(path: &str) -> (String, String) {
     let input = fs::read(path).expect("Should have a file called `input`");
     let lines = input.lines();
 
@@ -23,10 +23,10 @@ pub fn run(path: &str) -> (i32, i32) {
 
     let last_three = elves.iter().rev().take(3).sum::<i32>();
 
-    (last.to_owned(), last_three)
+    (last.to_string(), last_three.to_string())
 }
 
-pub fn run2(path: &str) -> (i32, i32) {
+pub fn run2(path: &str) -> (String, String) {
     let input = fs::read_to_string(path).unwrap();
 
     let mut calories = input
@@ -43,7 +43,7 @@ pub fn run2(path: &str) -> (i32, i32) {
     let last = calories.first().unwrap();
     let last_three = calories.iter().take(3).sum::<i32>();
 
-    (last.to_owned(), last_three)
+    (last.to_string(), last_three.to_string())
 }
 
 #[cfg(test)]
@@ -56,7 +56,7 @@ mod tests {
 
         let result = run(path);
 
-        assert_eq!(result.0, 24000);
+        assert_eq!(result.0, "24000");
     }
 
     #[test]
@@ -65,7 +65,7 @@ mod tests {
 
         let result = run(path);
 
-        assert_eq!(result.1, 45000);
+        assert_eq!(result.1, "45000");
     }
 
     #[test]
@@ -74,7 +74,7 @@ mod tests {
 
         let result = run2(path);
 
-        assert_eq!(result.0, 24000);
+        assert_eq!(result.0, "24000");
     }
 
     #[test]
@@ -83,6 +83,6 @@ mod tests {
 
         let result = run2(path);
 
-        assert_eq!(result.1, 45000);
+        assert_eq!(result.1, "45000");
     }
 }

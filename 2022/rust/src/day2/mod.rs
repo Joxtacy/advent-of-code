@@ -52,7 +52,7 @@ impl FromStr for Outcome {
     }
 }
 
-pub fn run(path: &str) -> (i32, i32) {
+pub fn run(path: &str) -> (String, String) {
     let input = fs::read_to_string(path).unwrap();
 
     let sum1 = input
@@ -105,7 +105,7 @@ pub fn run(path: &str) -> (i32, i32) {
         })
         .sum::<i32>();
 
-    (sum1, sum2)
+    (sum1.to_string(), sum2.to_string())
 }
 
 #[cfg(test)]
@@ -116,13 +116,13 @@ mod tests {
     fn part_1() {
         let result = run("./src/day2/test");
 
-        assert_eq!(15, result.0);
+        assert_eq!("15", result.0);
     }
 
     #[test]
     fn part_2() {
         let result = run("./src/day2/test");
 
-        assert_eq!(12, result.1);
+        assert_eq!("12", result.1);
     }
 }

@@ -3,6 +3,7 @@ mod day2;
 mod day3;
 mod day4;
 mod day5;
+mod day6;
 
 fn main() {
     let arg = std::env::args().last().expect("Y U NO ARGS?!");
@@ -15,6 +16,7 @@ fn main() {
         "day3" => day3::run("./src/day3/input"),
         "day4" => day4::run("./src/day4/input"),
         "day5" => day5::run("./src/day5/input"),
+        "day6" => day6::run("./src/day6/input"),
 
         _ => panic!("Try again (:"),
     };

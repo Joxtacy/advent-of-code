@@ -1,46 +1,67 @@
+use nom::bytes::complete::tag;
+use nom::character::complete;
+use nom::multi::separated_list0;
+use nom::sequence::separated_pair;
+use nom::IResult;
 use std::{fs, ops::RangeInclusive};
+
+/// Parses out a section as a `RangeInclusive`.
+///
+/// Example: "2-4" -> 2..=4
+fn sections(input: &str) -> IResult<&str, RangeInclusive<i32>> {
+    let (input, (start, end)) = separated_pair(complete::i32, tag("-"), complete::i32)(input)?;
+
+    Ok((input, start..=end))
+}
+
+/// Parses out a pair of sections separated by a comma as a tuple of `RangeInclusive`.
+///
+/// Example: "2-4,5-6" -> (2..=4, 5..=6)
+fn pair(input: &str) -> IResult<&str, (RangeInclusive<i32>, RangeInclusive<i32>)> {
+    let (input, pair) = separated_pair(sections, tag(","), sections)(input)?;
+
+    Ok((input, pair))
+}
+
+/// Parses out a list of pairs separated by newlines as a `Vec` of tuples of `RangeInclusive`.
+///
+/// Example: "2-4,5-6\n2-7,3-6" => vec![(2..=4, 5..=5), (2..=7, 3..=6)]
+fn pairs(input: &str) -> IResult<&str, Vec<(RangeInclusive<i32>, RangeInclusive<i32>)>> {
+    let (input, pairs) = separated_list0(tag("\n"), pair)(input)?;
+
+    Ok((input, pairs))
+}
 
 pub fn run(path: &str) -> (String, String) {
     let input = fs::read_to_string(path).unwrap();
 
-    let data = input.lines().map(|line| {
-        let pair = line.split(',').collect::<Vec<&str>>();
-        pair.iter()
-            .map(|p| p.split('-').collect::<Vec<&str>>())
-            .map(|p| p[0].parse::<i32>().unwrap()..=p[1].parse::<i32>().unwrap())
-            .collect::<Vec<RangeInclusive<i32>>>()
-    });
+    let (_, pairs) = pairs(input.as_str()).unwrap();
 
-    let sum1 = data
-        .clone()
-        .filter_map(|pair| {
-            let r1 = &pair[0];
-            let r2 = &pair[1];
-            if r2.contains(r1.start()) && r2.contains(r1.end()) {
-                Some(1)
-            } else if r1.contains(r2.start()) && r1.contains(r2.end()) {
-                Some(1)
+    let sum1 = pairs
+        .iter()
+        .filter_map(|(section1, section2)| {
+            if section1.contains(section2.start()) && section1.contains(section2.end()) {
+                Some(())
+            } else if section2.contains(section1.start()) && section2.contains(section1.end()) {
+                Some(())
             } else {
                 None
             }
         })
-        .collect::<Vec<i32>>()
-        .len();
+        .count();
 
-    let sum2 = data
-        .filter_map(|pair| {
-            let r1 = &pair[0];
-            let r2 = &pair[1];
-            if r2.contains(r1.start()) || r2.contains(r1.end()) {
-                Some(1)
-            } else if r1.contains(r2.start()) || r1.contains(r2.end()) {
-                Some(1)
+    let sum2 = pairs
+        .iter()
+        .filter_map(|(section1, section2)| {
+            if section1.contains(section2.start()) || section1.contains(section2.end()) {
+                Some(())
+            } else if section2.contains(section1.start()) || section2.contains(section1.end()) {
+                Some(())
             } else {
                 None
             }
         })
-        .collect::<Vec<i32>>()
-        .len();
+        .count();
 
     (sum1.to_string(), sum2.to_string())
 }

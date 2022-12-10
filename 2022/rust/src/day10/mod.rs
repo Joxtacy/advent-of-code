@@ -1,6 +1,6 @@
 use std::{fs, str::FromStr};
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 enum Ops {
     Noop,
     Addx(i32),
@@ -20,6 +20,19 @@ impl FromStr for Ops {
     }
 }
 
+fn is_overlapping(sprite: i32, cycle: i32) -> bool {
+    cycle == sprite || cycle == sprite - 1 || cycle == sprite + 1
+}
+
+fn render(pixels: &Vec<bool>) {
+    pixels.chunks(40).for_each(|line| {
+        for pixel in line {
+            print!("{}", if *pixel { "#" } else { " " });
+        }
+        print!("\n");
+    })
+}
+
 pub fn run(path: &str) -> (String, String) {
     let input = fs::read_to_string(path).unwrap();
 
@@ -33,7 +46,7 @@ pub fn run(path: &str) -> (String, String) {
     let mut sum = 0;
     let mut strength: i32 = 1;
     let mut cycle = 1;
-    for o in ops {
+    for o in ops.clone() {
         if cycles.contains(&cycle) {
             sum += strength * cycle;
         }
@@ -55,6 +68,35 @@ pub fn run(path: &str) -> (String, String) {
     }
 
     let answer1 = sum;
+
+    let mut pixels = vec![false; 240];
+
+    let mut strength: i32 = 1;
+    let mut cycle = 0;
+    for o in ops {
+        match o {
+            Ops::Noop => {
+                if is_overlapping(strength, cycle % 40) {
+                    pixels[cycle as usize] = true;
+                }
+                cycle += 1;
+            }
+            Ops::Addx(x) => {
+                if is_overlapping(strength, cycle % 40) {
+                    pixels[cycle as usize] = true;
+                }
+                cycle += 1;
+                if is_overlapping(strength, cycle % 40) {
+                    pixels[cycle as usize] = true;
+                }
+                cycle += 1;
+                strength += x
+            }
+        }
+    }
+
+    render(&pixels);
+
     let answer2 = 0;
     (answer1.to_string(), answer2.to_string())
 }
@@ -71,10 +113,9 @@ mod tests {
     }
 
     #[test]
-    #[ignore]
     fn part_2() {
         let result = run("./src/day10/test");
 
-        assert_eq!("36", result.1);
+        assert_eq!("0", result.1);
     }
 }

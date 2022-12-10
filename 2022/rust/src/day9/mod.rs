@@ -1,6 +1,6 @@
 use std::{collections::HashSet, fs, str::FromStr};
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 enum Move {
     R(i32),
     L(i32),
@@ -64,6 +64,18 @@ fn calc_move(h: (i32, i32), t: (i32, i32)) -> Vec<Move> {
     } else if x == -2 && y == -1 {
         moves.push(Move::L(1));
         moves.push(Move::D(1));
+    } else if x == 2 && y == 2 {
+        moves.push(Move::U(1));
+        moves.push(Move::R(1));
+    } else if x == 2 && y == -2 {
+        moves.push(Move::D(1));
+        moves.push(Move::R(1));
+    } else if x == -2 && y == 2 {
+        moves.push(Move::U(1));
+        moves.push(Move::L(1));
+    } else if x == -2 && y == -2 {
+        moves.push(Move::D(1));
+        moves.push(Move::L(1));
     } else if x == 0 {
         if y == 2 {
             moves.push(Move::U(1));
@@ -100,31 +112,71 @@ pub fn run(path: &str) -> (String, String) {
 
     let mut touched: HashSet<(i32, i32)> = HashSet::new();
 
-    let mut h = (0, 0);
-    let mut t = (0, 0);
+    let num_tails = 2;
+    let mut tails = vec![(0, 0); num_tails];
 
-    for mov in moves {
+    for mov in moves.clone() {
         let d = match mov {
             Move::R(d) | Move::L(d) | Move::U(d) | Move::D(d) => d,
         };
-
         for _ in 1..=d {
-            h = match mov {
+            let h = tails[0];
+            tails[0] = match mov {
                 Move::R(_) => (h.0 + 1, h.1),
                 Move::L(_) => (h.0 - 1, h.1),
                 Move::U(_) => (h.0, h.1 + 1),
                 Move::D(_) => (h.0, h.1 - 1),
             };
-            let t_moves = calc_move(h, t);
-            for m in t_moves {
-                t = make_move(t, m);
+
+            for n in 1..tails.len() {
+                let h = tails[n - 1];
+                let mut t = tails[n];
+
+                let t_moves = calc_move(h, t);
+                for m in t_moves {
+                    t = make_move(t, m);
+                }
+                tails[n] = t;
             }
-            touched.insert(t);
+            touched.insert(tails[tails.len() - 1]);
+        }
+    }
+    let answer1 = touched.len();
+
+    // part 2
+    let mut touched: HashSet<(i32, i32)> = HashSet::new();
+
+    let num_tails = 10;
+    let mut tails = vec![(0, 0); num_tails];
+
+    for mov in moves {
+        let d = match mov {
+            Move::R(d) | Move::L(d) | Move::U(d) | Move::D(d) => d,
+        };
+        for _ in 1..=d {
+            let h = tails[0];
+            tails[0] = match mov {
+                Move::R(_) => (h.0 + 1, h.1),
+                Move::L(_) => (h.0 - 1, h.1),
+                Move::U(_) => (h.0, h.1 + 1),
+                Move::D(_) => (h.0, h.1 - 1),
+            };
+
+            for n in 1..tails.len() {
+                let h = tails[n - 1];
+                let mut t = tails[n];
+
+                let t_moves = calc_move(h, t);
+                for m in t_moves {
+                    t = make_move(t, m);
+                }
+                tails[n] = t;
+            }
+            touched.insert(tails[tails.len() - 1]);
         }
     }
 
-    let answer1 = touched.len();
-    let answer2 = 1;
+    let answer2 = touched.len();
     (answer1.to_string(), answer2.to_string())
 }
 
@@ -141,7 +193,7 @@ mod tests {
 
     #[test]
     fn part_2() {
-        let result = run("./src/day9/test");
+        let result = run("./src/day9/test2");
 
         assert_eq!("36", result.1);
     }

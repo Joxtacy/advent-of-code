@@ -1,4 +1,5 @@
 mod day1;
+mod day10;
 mod day2;
 mod day3;
 mod day4;
@@ -19,6 +20,7 @@ fn main() {
         "day5" => day5::run("./src/day5/input"),
         "day6" => day6::run("./src/day6/input"),
         "day9" => day9::run("./src/day9/input"),
+        "day10" => day10::run("./src/day10/input"),
 
         _ => panic!("Try again (:"),
     };
